@@ -1,0 +1,92 @@
+@startuml
+' Define the classes
+class Flight {
+    - flightID: String
+    - carrier: String
+    - departureCity: String
+    - arrivalCity: String
+    - departureTime: DateTime
+    - arrivalTime: DateTime
+    - price: Float
+    - availableSeats: int
+    + displayFlightInfo(): String
+}
+
+class Reservation {
+    - reservationID: String
+    - flightID: String
+    - passengerName: String
+    - passengerEmail: String
+    - seatClass: String
+    - status: String
+    + makeReservation(): Boolean
+    + cancelReservation(): Boolean
+}
+
+class Payment {
+    - paymentID: String
+    - amount: Float
+    - paymentMethod: String
+    - paymentDate: DateTime
+    + processPayment(): Boolean
+    + refundPayment(): Boolean
+}
+
+class User {
+    - userID: String
+    - firstName: String
+    - lastName: String
+    - email: String
+    - phoneNumber: String
+    + searchFlights(criteria: Map<String, String>): List<AmadeusFlight>
+    + makeReservation(flight: Flight): Reservation
+    + makePayment(payment: Payment): Boolean
+}
+
+class Administrator {
+    - adminID: String
+    - adminName: String
+    - adminEmail: String
+    + addFlight(flight: Flight): Boolean
+    + updateFlight(flight: Flight): Boolean
+    + deleteFlight(flightID: String): Boolean
+}
+
+class Refund {
+    - refundID: String
+    - reservationID: String
+    - amount: Float
+    - refundDate: DateTime
+    + processRefund(): Boolean
+}
+
+class AmadeusAPI {
+    - apiKey: String
+    - apiSecret: String
+    + authenticate(): Boolean
+    + getFlights(criteria: Map<String, String>): List<AmadeusFlight>
+    + getFlightDetails(flightID: String): AmadeusFlight
+}
+
+class AmadeusFlight {
+    - flightID: String
+    - carrier: String
+    - departureTime: DateTime
+    - arrivalTime: DateTime
+    - price: Float
+    - availableSeats: int
+    + getFlightInfo(): String
+}
+
+' Define relationships
+User "1" -- "0..*" Reservation : makes >
+Reservation "1" -- "1" Flight : books >
+Reservation "1" -- "1" Payment : paid by >
+Payment "1" -- "1" Refund : refund for >
+
+Administrator "1" -- "0..*" Flight : manages >
+
+User "1" -- "1" AmadeusAPI : uses >
+AmadeusAPI "1" -- "0..*" AmadeusFlight : fetches >
+
+@enduml

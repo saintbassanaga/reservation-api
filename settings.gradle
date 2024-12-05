@@ -2,3 +2,4 @@ rootProject.name = 'reservation-api'
 
 include('flightservice')
 include('auth-service')
+include('config-server')

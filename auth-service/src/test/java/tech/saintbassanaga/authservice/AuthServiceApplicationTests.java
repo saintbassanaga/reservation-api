@@ -1,10 +1,10 @@
-package tech.saintbassanaga.reservationapi;
+package tech.saintbassanaga.authservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ReservationApiApplicationTests {
+class AuthServiceApplicationTests {
 
     @Test
     void contextLoads() {

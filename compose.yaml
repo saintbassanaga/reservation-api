@@ -1,9 +1,73 @@
 services:
   postgres:
     image: 'postgres:latest'
+    container_name: reservation_postgres_container
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      POSTGRES_DB: reservationdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: verysecret7
     ports:
-      - '5432'
+      - '5434:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  redis:
+    image: 'redis:latest'
+    container_name: redis_container
+    ports:
+      - '6379:6379'
+    networks:
+      - app_network
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+#  flightService:
+##    build:
+##      context: ./flightservice
+#    container_name: flightservice_container
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5433/reservationdb
+#      SPRING_DATASOURCE_USERNAME: admin
+#      SPRING_DATASOURCE_PASSWORD: verysecret7
+#      SPRING_SESSION_REDIS_HOST: redis
+#      SPRING_REDIS_HOST: redis
+#      SPRING_REDIS_PORT: 6379
+#      SPRING_PROFILE_ACTIVE: flightprofile
+#    depends_on:
+#      - postgres
+#      - redis
+#    ports:
+#      - '8080:8080'
+#    networks:
+#      - app_network
+#
+#  authService:
+##    build:
+##      context: ./auth-service
+#    container_name: auth-service_container
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5433/reservationdb
+#      SPRING_DATASOURCE_USERNAME: admin
+#      SPRING_DATASOURCE_PASSWORD: verysecret7
+#      SPRING_SESSION_REDIS_HOST: redis
+#      SPRING_REDIS_HOST: redis
+#      SPRING_REDIS_PORT: 6379
+#      SPRING_PROFILE_ACTIVE: authprofile
+#    depends_on:
+#      - postgres
+#      - redis
+#    ports:
+#      - '8081:8080'
+#    networks:
+#      - app_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  app_network:
+    driver: bridge

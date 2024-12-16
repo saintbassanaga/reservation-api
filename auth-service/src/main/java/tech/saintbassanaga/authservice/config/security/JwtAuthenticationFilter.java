@@ -28,10 +28,12 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtDecoder jwtDecoder;
+    private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtDecoder jwtDecoder, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtDecoder jwtDecoder, JwtUtils jwtUtils, UserDetailsService userDetailsService) {
         this.jwtDecoder = jwtDecoder;
+        this.jwtUtils = jwtUtils;
         this.userDetailsService = userDetailsService;
     }
 
@@ -58,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Jwt jwt = jwtDecoder.decode(token);
 
             // Extract username (subject) from JWT
-            String username = jwt.getSubject();
+            String username = jwtUtils.extractUsername(token);
 
             // Proceed only if username is not null and no user is authenticated yet
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.*;
 
-
 import javax.crypto.spec.SecretKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -18,8 +17,9 @@ public class JwtUtils {
     // Secret key for signing the JWT (HMAC)
     private final String SECRET_KEY = "Z3VkWmZvU2Q5QW9LRHVqZlZXaDFMSmh6cW93a0RqZXFTckNNRHlNZU1aNGRHTk9SZENubUZHVTBYVzBiRQ==";
 
-    // Token validity duration
-    private static final long TOKEN_VALIDITY_SECONDS = 24 * 60 * 60; // 24 hours
+    // Token validity durations
+    private static final long ACCESS_TOKEN_VALIDITY_SECONDS = 24 * 60 * 60; // 24 hours
+    private static final long REFRESH_TOKEN_VALIDITY_DAYS = 7; // 7 days
 
     /**
      * Configures a `JwtEncoder` to sign tokens.
@@ -40,29 +40,50 @@ public class JwtUtils {
     }
 
     /**
-     * Generates a JWT token based on the authenticated user details.
+     * Generates an access token based on the authenticated user details.
      *
      * @param authentication the authentication object containing user information.
-     * @return the generated JWT token.
+     * @return the generated access token.
      */
-    public String generateToken(Authentication authentication) {
+    public String generateAccessToken(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         Instant now = Instant.now();
 
-        // Build the claims
+        // Build the claims for the access token
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer("your-application") // Replace with your application identifier
                 .issuedAt(now)
-                .expiresAt(now.plus(TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS))
+                .expiresAt(now.plus(ACCESS_TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS))
                 .subject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities()) // Add roles or other custom claims
                 .build();
 
-        // Encode the token
+        // Encode the access token
         return jwtEncoder().encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
     }
 
+    /**
+     * Generates a refresh token for the authenticated user.
+     *
+     * @param authentication the authentication object containing user information.
+     * @return the generated refresh token.
+     */
+    public String generateRefreshToken(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Instant now = Instant.now();
 
+        // Build the claims for the refresh token
+        JwtClaimsSet claimsSet = JwtClaimsSet.builder()
+                .issuer("your-application") // Replace with your application identifier
+                .issuedAt(now)
+                .expiresAt(now.plus(REFRESH_TOKEN_VALIDITY_DAYS, ChronoUnit.DAYS))
+                .subject(userDetails.getUsername())
+                .claim("type", "refresh") // Indicate this is a refresh token
+                .build();
+
+        // Encode the refresh token
+        return jwtEncoder().encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
+    }
 
     /**
      * Extracts the username (subject) from the given JWT token.

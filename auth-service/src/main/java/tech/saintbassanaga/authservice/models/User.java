@@ -16,7 +16,7 @@ import java.util.Collections;
 @Getter
 @Setter
 @Entity
-@Table(name = "users" , indexes = {
+@Table(name = "users", indexes = {
         @Index(name = "user_uuid_username_index", columnList = "uuid ,username")
 })
 public class User extends AuditingEntity implements UserDetails {
@@ -28,7 +28,7 @@ public class User extends AuditingEntity implements UserDetails {
     private Role role;
 
     /**
-     * Returns the authorities granted to the user. Cannot return <code>null</code>.
+     * Return the authorities granted to the user. Cannot return <code>null</code>.
      *
      * @return the authorities, sorted by natural key (never <code>null</code>)
      */

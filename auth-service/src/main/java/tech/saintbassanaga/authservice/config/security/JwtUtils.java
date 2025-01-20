@@ -35,8 +35,8 @@ public class JwtUtils {
      */
     public JwtUtils() {
         try {
-            this.privateKey = loadPrivateKey("private_key.pem");
-            this.publicKey = loadPublicKey("public_key.pem");
+            this.privateKey = loadPrivateKey();
+            this.publicKey = loadPublicKey();
         } catch (Exception e) {
             throw new RuntimeException("Error loading RSA keys", e);
         }
@@ -45,13 +45,12 @@ public class JwtUtils {
     /**
      * Load RSA Private Key from a PEM file.
      *
-     * @param resourcePath Path to the PEM file containing the private key.
      * @return RSAPrivateKey instance.
      * @throws Exception If the file or key parsing fails.
      */
-    private RSAPrivateKey loadPrivateKey(String resourcePath) throws Exception {
-        String keyContent = loadKeyContent(resourcePath);
-        keyContent = keyContent.replaceAll("-----BEGIN PRIVATE KEY-----", "")
+    private RSAPrivateKey loadPrivateKey() throws Exception {
+        String keyContent = loadKeyContent("private_key.pem")
+                .replaceAll("-----BEGIN PRIVATE KEY-----", "")
                 .replaceAll("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s", ""); // Remove header/footer and whitespaces
         byte[] keyBytes = Base64.getDecoder().decode(keyContent);
@@ -63,13 +62,12 @@ public class JwtUtils {
     /**
      * Load RSA Public Key from a PEM file.
      *
-     * @param resourcePath Path to the PEM file containing the public key.
      * @return RSAPublicKey instance.
      * @throws Exception If the file or key parsing fails.
      */
-    private RSAPublicKey loadPublicKey(String resourcePath) throws Exception {
-        String keyContent = loadKeyContent(resourcePath);
-        keyContent = keyContent.replaceAll("-----BEGIN PUBLIC KEY-----", "")
+    private RSAPublicKey loadPublicKey() throws Exception {
+        String keyContent = loadKeyContent("public_key.pem")
+                .replaceAll("-----BEGIN PUBLIC KEY-----", "")
                 .replaceAll("-----END PUBLIC KEY-----", "")
                 .replaceAll("\\s", ""); // Remove header/footer and whitespaces
         byte[] keyBytes = Base64.getDecoder().decode(keyContent);
@@ -127,7 +125,7 @@ public class JwtUtils {
         Instant now = Instant.now();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
-                .issuer("your-application")
+                .issuer("auth-service")
                 .issuedAt(now)
                 .expiresAt(now.plus(ACCESS_TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS))
                 .subject(userDetails.getUsername())
@@ -148,7 +146,7 @@ public class JwtUtils {
         Instant now = Instant.now();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
-                .issuer("your-application")
+                .issuer("auth-service")
                 .issuedAt(now)
                 .expiresAt(now.plus(REFRESH_TOKEN_VALIDITY_DAYS, ChronoUnit.DAYS))
                 .subject(userDetails.getUsername())
@@ -176,13 +174,14 @@ public class JwtUtils {
      */
     public boolean isTokenExpired(String token) {
         Instant expiration = jwtDecoder().decode(token).getExpiresAt();
+        assert expiration != null;
         return expiration.isBefore(Instant.now());
     }
 
     /**
      * Validates the token by checking the username and expiration status.
      *
-     * @param token JWT token to validate.
+     * @param token       JWT token to validate.
      * @param userDetails UserDetails object for comparison.
      * @return True if the token is valid, false otherwise.
      */

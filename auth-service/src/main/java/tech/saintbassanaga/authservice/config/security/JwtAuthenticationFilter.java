@@ -4,17 +4,19 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tech.saintbassanaga.authservice.services.UserService;
+import tech.saintbassanaga.authservice.services.impls.UserServiceImpl;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,14 +27,15 @@ import java.util.stream.Collectors;
  * Created by saintbassanaga
  * In the Project reservation-api at Sat - 12/14/24
  */
+
+@Configuration
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtDecoder jwtDecoder;
     private final JwtUtils jwtUtils;
-    private final UserDetailsService userDetailsService;
+    private final UserService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtDecoder jwtDecoder, JwtUtils jwtUtils, UserDetailsService userDetailsService) {
-        this.jwtDecoder = jwtDecoder;
+
+    public JwtAuthenticationFilter(JwtUtils jwtUtils, UserServiceImpl userDetailsService) {
         this.jwtUtils = jwtUtils;
         this.userDetailsService = userDetailsService;
     }
@@ -57,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             // Decode and validate the token
-            Jwt jwt = jwtDecoder.decode(token);
+            Jwt jwt = jwtUtils.jwtDecoder().decode(token);
 
             // Extract username (subject) from JWT
             String username = jwtUtils.extractUsername(token);
@@ -65,6 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Proceed only if username is not null and no user is authenticated yet
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // Load user details from UserDetailsService
+
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 // Extract roles from JWT claims and convert to authorities
@@ -86,4 +90,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Continue the filter chain
         chain.doFilter(request, response);
     }
+
 }

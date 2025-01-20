@@ -7,27 +7,21 @@ package tech.saintbassanaga.authservice.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.session.SessionInformationExpiredEvent;
-import org.springframework.util.AntPathMatcher;
-
-import java.security.interfaces.RSAPublicKey;
 
 @Configuration
 public class SecurityConfig {
 
    public final  JwtDecoder jwtDecoder;
 
-    public SecurityConfig(JwtDecoder jwtDecoder) {
+   public final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtDecoder jwtDecoder, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtDecoder = jwtDecoder;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -42,26 +36,21 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers("/user/**").hasAuthority("USER")
-                        .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
+                        .anyRequest().permitAll())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .maximumSessions(1)
-                        .expiredUrl("/login?expired=true")
                         .maxSessionsPreventsLogin(true)
-                        .expiredSessionStrategy(SessionInformationExpiredEvent::getSessionInformation)
                 )
+                .passwordManagement(configurer -> configurer.changePasswordPage("/update-password"))
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt(
                                 jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)
                         )
-                )
-                .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer
-                        .ignoringRequestMatchers("/api/no-csrf/**"));
+                );
         return http.build();
 
     }
+
 
 }

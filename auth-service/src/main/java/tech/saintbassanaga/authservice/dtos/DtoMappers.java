@@ -2,6 +2,7 @@ package tech.saintbassanaga.authservice.dtos;
 
 import org.springframework.stereotype.Component;
 import tech.saintbassanaga.authservice.models.User;
+import tech.saintbassanaga.authservice.models.mapped.Civility;
 import tech.saintbassanaga.authservice.models.mapped.Credential;
 
 /**
@@ -27,7 +28,6 @@ public class DtoMappers {
     public User userCreation(UserCreationDto userCreationDto) {
 
         User user = new User();
-        user.setCivility(userCreationDto.civility());
         user.setCredential(new Credential(
                 userCreationDto.credentialEmail(),
                 userCreationDto.credentialPhone(),
@@ -35,5 +35,14 @@ public class DtoMappers {
                 userCreationDto.credentialPassword()
         ));
         return user;
+    }
+
+    public static Civility fromCivilityDtoToClass(CivilityDto civilityDto){
+        Civility civility = new Civility();
+        civility.setName(civilityDto.name());
+        civility.setSurname(civilityDto.surname());
+        civility.setBornDate(civilityDto.bornDate());
+        civility.setCardNumber(civilityDto.cardNumber());
+        return civility;
     }
 }

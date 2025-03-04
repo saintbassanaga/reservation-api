@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tech.saintbassanaga.authservice.services.UserService;
 import tech.saintbassanaga.authservice.services.impls.UserServiceImpl;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * In the Project reservation-api at Sat - 12/14/24
  */
 
-@Configuration
+@Service
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;

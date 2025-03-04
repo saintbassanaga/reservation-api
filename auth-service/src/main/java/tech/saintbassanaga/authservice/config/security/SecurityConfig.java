@@ -15,9 +15,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 public class SecurityConfig {
 
-   public final  JwtDecoder jwtDecoder;
+    public final JwtDecoder jwtDecoder;
 
-   public final JwtAuthenticationFilter jwtAuthenticationFilter;
+    public final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfig(JwtDecoder jwtDecoder, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtDecoder = jwtDecoder;
@@ -26,7 +26,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        http.authorizeHttpRequests(authorizationManager -> authorizationManager
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/swagger-ui/*").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
                         .accessDeniedPage("/access-denied")
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
@@ -35,8 +40,7 @@ public class SecurityConfig {
                             request.getSession().setMaxInactiveInterval(60 * 60);
                         })
                 )
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                        .anyRequest().permitAll())
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .maximumSessions(1)

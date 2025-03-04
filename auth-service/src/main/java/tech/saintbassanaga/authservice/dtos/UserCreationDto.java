@@ -8,7 +8,6 @@ import java.io.Serializable;
  * DTO for {@link tech.saintbassanaga.authservice.models.User}
  */
 public record UserCreationDto(
-        Civility civility,
         String credentialUsername, String credentialPassword, String credentialEmail,
         String credentialPhone) implements Serializable {
 }

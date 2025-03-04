@@ -12,6 +12,6 @@ import tech.saintbassanaga.authservice.dtos.UserCreationDto;
  */
 @Service
 public interface UserService extends UserDetailsService {
-    public AuthResponse login(LoginDto request);
-    public String register(UserCreationDto request);
+    AuthResponse login(LoginDto request);
+    String register(UserCreationDto request);
 }

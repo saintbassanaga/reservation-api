@@ -1,5 +1,6 @@
 package tech.saintbassanaga.authservice.services.impls;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
 
-    public UserServiceImpl(UserRepository userRepository, DtoMappers dtoMappers, JwtUtils jwtUtils, AuthenticationManager authenticationManager) {
+    public UserServiceImpl(UserRepository userRepository, DtoMappers dtoMappers, JwtUtils jwtUtils, @Lazy AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.dtoMappers = dtoMappers;
         this.jwtUtils = jwtUtils;
@@ -46,11 +47,9 @@ public class UserServiceImpl implements UserService {
     public AuthResponse login(LoginDto request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-
         String accessToken = jwtUtils.generateAccessToken(authentication);
-        String refreshToken = jwtUtils.generateRefreshToken(authentication);
-
-        return new AuthResponse(accessToken, refreshToken);
+       String refreshToken = jwtUtils.generateRefreshToken(authentication);
+        return new AuthResponse(accessToken,refreshToken);
     }
     /**
      * Handles user registration.
@@ -65,12 +64,11 @@ public class UserServiceImpl implements UserService {
         userRepository.save(dtoMappers.userCreation(request));
         return "User registered successfully. Please log in.";
     }
-
     /**
      * Locates the user based on the username. In the actual implementation, the search
      * may be case-sensitive or case-insensitive depending on how the
      * implementation instance is configured. In this case, the <code>UserDetails</code>
-     * object that comes back may have a username that is of a different case than what
+     * object that comes back may have a username of a different case than what
      * was actually requested.
      *
      * @param username the username identifying the user whose data is required.

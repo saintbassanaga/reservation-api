@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -14,6 +16,5 @@ import java.util.Date;
 public class Civility {
     private String name;
     private String surname;
-    private LocalDate bornDate;
     private String cardNumber;
 }

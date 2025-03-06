@@ -1,5 +1,6 @@
 package tech.saintbassanaga.authservice.config.security;
 
+import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -7,7 +8,6 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.*;
 
@@ -20,6 +20,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Date;
 
 @Configuration
 public class JwtUtils {
@@ -101,7 +102,7 @@ public class JwtUtils {
     @Bean
     public JwtEncoder jwtEncoder() {
         RSAKey rsaKey = new RSAKey.Builder(publicKey).privateKey(privateKey).build();
-        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new com.nimbusds.jose.jwk.JWKSet(rsaKey));
+        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(rsaKey));
         return new NimbusJwtEncoder(jwkSource);
     }
 
@@ -122,13 +123,12 @@ public class JwtUtils {
      * @return Signed JWT access token as a String.
      */
     public String generateAccessToken(Authentication authentication) {
-        User userDetails = (User) authentication.getPrincipal();
-        Instant now = Instant.now();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer("auth-service")
-                .issuedAt(now)
-                .expiresAt(now.plus(ACCESS_TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS))
+                .issuedAt(Instant.now())  // Convert Instant to Date
+                .expiresAt(Instant.now().plus(ACCESS_TOKEN_VALIDITY_SECONDS, ChronoUnit.SECONDS))  // Fix here
                 .subject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())
                 .build();
@@ -143,7 +143,7 @@ public class JwtUtils {
      * @return Signed JWT refresh token as a String.
      */
     public String generateRefreshToken(Authentication authentication) {
-        User userDetails = (User) authentication.getPrincipal();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         Instant now = Instant.now();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()

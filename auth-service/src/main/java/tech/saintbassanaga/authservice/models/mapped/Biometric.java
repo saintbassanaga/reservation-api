@@ -12,7 +12,7 @@ import lombok.Setter;
 public class Biometric {
 
   @Lob
-  @Column(columnDefinition = "BYTEA")
+  @Column(name = "photo")
   protected byte[] photo;
   private String idCard;
   private String passportID;
@@ -20,10 +20,10 @@ public class Biometric {
   private String fingerprint;  // Store fingerprint data as a String (e.g., JSON, Base64, etc.)
 
   @Lob
-  @Column(columnDefinition = "BYTEA")
+  @Column(name = "signature")
   private byte[] signature;    // Store a digital signature as binary data
 
-  @Column(length = 20, unique = true, nullable = false)
+  @Column(length = 20)
   private String uniqueID;     // A unique identifier for this biometric entry
 
   private String notes;        // Additional notes or metadata

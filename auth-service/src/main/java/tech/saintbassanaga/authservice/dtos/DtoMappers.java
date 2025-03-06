@@ -1,5 +1,6 @@
 package tech.saintbassanaga.authservice.dtos;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import tech.saintbassanaga.authservice.models.User;
 import tech.saintbassanaga.authservice.models.mapped.Civility;
@@ -12,11 +13,17 @@ import tech.saintbassanaga.authservice.models.mapped.Credential;
 
 @Component
 public class DtoMappers {
+    private final PasswordEncoder passwordEncoder;
+
+    public DtoMappers(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
     public UserDto fromUserToUserDto(User user) {
         return new UserDto(
                 user.getUuid(),
-                user.getCreationDateTime(),
-                user.getLastModificationDateTime(),
+/*                user.getCreationDateTime(),
+                user.getLastModificationDateTime(),*/
                 user.getCivility(),
                 user.getCredential().getUsername(),
                 user.getCredential().getEmail(),
@@ -29,10 +36,10 @@ public class DtoMappers {
 
         User user = new User();
         user.setCredential(new Credential(
-                userCreationDto.credentialEmail(),
-                userCreationDto.credentialPhone(),
                 userCreationDto.credentialUsername(),
-                userCreationDto.credentialPassword()
+                passwordEncoder.encode(userCreationDto.credentialPassword()),
+                userCreationDto.credentialEmail(),
+                userCreationDto.credentialPhone()
         ));
         return user;
     }
@@ -41,7 +48,6 @@ public class DtoMappers {
         Civility civility = new Civility();
         civility.setName(civilityDto.name());
         civility.setSurname(civilityDto.surname());
-        civility.setBornDate(civilityDto.bornDate());
         civility.setCardNumber(civilityDto.cardNumber());
         return civility;
     }

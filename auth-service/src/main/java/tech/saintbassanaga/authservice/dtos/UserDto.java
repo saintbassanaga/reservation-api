@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * DTO for {@link tech.saintbassanaga.authservice.models.User}
  */
-public record UserDto(UUID uuid, LocalDateTime creationDateTime, LocalDateTime lastModificationDateTime,
+public record UserDto(UUID uuid, /*LocalDateTime creationDateTime, LocalDateTime lastModificationDateTime,*/
                       Civility civility, String credentialUsername, String credentialEmail, String credentialPhone,
                       Biometric biometric) implements Serializable {
 }

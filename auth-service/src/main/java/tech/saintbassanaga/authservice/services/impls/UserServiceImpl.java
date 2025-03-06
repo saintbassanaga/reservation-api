@@ -5,17 +5,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import tech.saintbassanaga.authservice.config.security.JwtUtils;
 import tech.saintbassanaga.authservice.dtos.AuthResponse;
 import tech.saintbassanaga.authservice.dtos.DtoMappers;
 import tech.saintbassanaga.authservice.dtos.LoginDto;
 import tech.saintbassanaga.authservice.dtos.UserCreationDto;
-import tech.saintbassanaga.authservice.models.User;
 import tech.saintbassanaga.authservice.repository.UserRepository;
 import tech.saintbassanaga.authservice.services.UserService;
 

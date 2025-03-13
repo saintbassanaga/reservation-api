@@ -49,7 +49,7 @@
         - PayPal et Visa pour les paiements : Préparation des API pour l'intégration de paiements sécurisés.
         - Twilio pour les notifications SMS et AWS SES pour les notifications par email.
     - **Environnement local pour les développeurs** :
-        - Mise en place d'un environnement de développement Dockerisé ou d'un autre système similaire.
+        - Mise en place d'un environnement de développement Dockers ou d'un autre système similaire.
         - Outils de gestion de version (Git) et préparation du workflow de développement (CI/CD).
     - **Documentation de l'environnement de développement** :
         - Guide détaillé pour que les développeurs puissent configurer leur environnement de travail.
